@@ -8,7 +8,7 @@ namespace :service_sign_in do
 
     abort USAGE_MESSAGE + YAML_LOCATION unless args[:yaml_file]
 
-    validator = ServiceSignInYamlValidator.new("lib/service_sign_in/#{args[:yaml_file]}")
+    validator = ServiceSignInYamlValidator.new("../../app/lib/service_sign_in/#{args[:yaml_file]}")
 
     begin
       file = validator.validate
@@ -33,7 +33,7 @@ namespace :service_sign_in do
     USAGE_MESSAGE = "> usage: rake service_sign_in:validate[example.en.yaml]\n".freeze
     abort USAGE_MESSAGE + YAML_LOCATION unless args[:yaml_file]
 
-    validator = ServiceSignInYamlValidator.new("lib/service_sign_in/#{args[:yaml_file]}")
+    validator = ServiceSignInYamlValidator.new("../../app/lib/service_sign_in/#{args[:yaml_file]}")
     file = validator.validate
 
     if file.is_a?(Hash)
@@ -77,5 +77,5 @@ namespace :service_sign_in do
     puts "> #{content_id} has been unpublished"
   end
 
-  YAML_LOCATION = "> service_sign_in YAML files live here: lib/service_sign_in".freeze
+  YAML_LOCATION = "> service_sign_in YAML files live here: app/lib/service_sign_in".freeze
 end

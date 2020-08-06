@@ -12,7 +12,7 @@ class ServiceSignInTest < ActiveSupport::TestCase
   end
 
   def load_content_from_file(file_name)
-    @content ||= YAML.load_file(Rails.root.join("lib", "service_sign_in", file_name)).deep_symbolize_keys
+    @content ||= YAML.load_file(Rails.root.join("app/lib", "service_sign_in", file_name)).deep_symbolize_keys
 
     nil
   end

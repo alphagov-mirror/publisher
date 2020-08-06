@@ -6,7 +6,7 @@
       "fingerprint": "1dd7580ea4eb3c303e870dad82dc5223592fd36c4b44bec6ab6ea0a0c1affbc0",
       "check_name": "SQL",
       "message": "Possible SQL injection",
-      "file": "lib/csv_report_generator.rb",
+      "file": "app/lib/csv_report_generator.rb",
       "line": 14,
       "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
       "code": "redis.lock(\"publisher:#{Rails.env}:report_generation_lock\", :life => 15.minutes)",

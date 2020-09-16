@@ -1,3 +1,5 @@
+require "net/http"
+
 module Healthcheck
   class ScheduledPublishing
     def name
@@ -9,7 +11,13 @@ module Healthcheck
     end
 
     def details
+      url = "#{Plek.new.find("publishing-api")}/healthcheck"
+      uri = URI.parse(url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      request = Net::HTTP::Get.new(uri.request_uri)
+      response = http.request(request)
       {
+        publishing_api: JSON.parse(response.body),
         queue_size: queue_size,
         edition_count: edition_count,
       }

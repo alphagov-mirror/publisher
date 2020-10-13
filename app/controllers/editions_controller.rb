@@ -426,4 +426,10 @@ private
   def attempted_activity
     Edition::ACTIONS.invert[params[:commit]]
   end
+
+  def update_resource(object, attributes)
+    if current_user.govuk_editor? || (object.artefact.welsh? && current_user.welsh_editor?)
+      object.try(:update, *attributes)
+    end
+  end
 end

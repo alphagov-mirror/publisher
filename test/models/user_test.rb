@@ -130,4 +130,17 @@ class UserTest < ActiveSupport::TestCase
 
     assert_nil publication.assigned_to
   end
+
+  test "users with welsh_editor permissions may not create notes" do
+    user = FactoryBot.create(:user, :welsh_editor, name: "Stub User")
+    edition = FactoryBot.create(:guide_edition, panopticon_id: @artefact.id, state: "ready")
+    assert_not user.record_note(edition, "Something important")
+  end
+
+  test "users with welsh_editor permissions may create notes for Welsh editions" do
+    user = FactoryBot.create(:user, :welsh_editor, name: "Stub User")
+    welsh_artefact = FactoryBot.create(:artefact, language: "cy")
+    edition = FactoryBot.create(:guide_edition, panopticon_id: welsh_artefact.id, state: "ready")
+    assert user.record_note(edition, "Rhywbeth pwysig")
+  end
 end

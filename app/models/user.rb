@@ -51,6 +51,10 @@ class User
   end
 
   def record_note(edition, comment, type = Action::NOTE)
+    if !edition.artefact.welsh? && welsh_editor?
+      errors[:permissions] << "Incorrect permission"
+      return false
+    end
     edition.new_action(self, type, comment: comment)
   end
 

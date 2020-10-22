@@ -394,6 +394,47 @@ class EditionsControllerTest < ActionController::TestCase
     end
   end
 
+  context "#unpublish" do
+    setup do
+      @guide = FactoryBot.create(:guide_edition, panopticon_id: FactoryBot.create(:artefact).id)
+      @redirect_url = "https://www.example.com/somewhere_else"
+    end
+
+    should "update publishing API upon unpublishing an edition" do
+      UnpublishService.expects(:call).with(@guide.artefact, @user, @redirect_url).returns(true)
+
+      post :process_unpublish,
+           params: {
+             id: @guide.id,
+             redirect_url: @redirect_url,
+           }
+
+      assert_redirected_to root_path
+      assert_equal "Content unpublished and redirected", flash[:notice]
+    end
+
+    context "Welsh editors" do
+      setup do
+        login_as_welsh_editor
+        @welsh_artefact = FactoryBot.create(:artefact, language: "cy")
+        @welsh_guide = FactoryBot.create(:guide_edition, panopticon_id: @welsh_artefact.id, state: "ready")
+      end
+
+      should "not allow a Welsh editor to unpublish an edition" do
+        UnpublishService.expects(:call).with(@guide.artefact, @user, @redirect_url).never
+
+        post :process_unpublish,
+             params: {
+               id: @guide.id,
+               redirect_url: @redirect_url,
+             }
+
+        assert_redirected_to edition_path(@guide)
+        assert_equal "Incorrect permission", flash[:alert]
+      end
+    end
+  end
+
   context "given a simple smart answer" do
     setup do
       @artefact = FactoryBot.create(:artefact, slug: "foo", name: "Foo", kind: "simple_smart_answer", owning_app: "publisher")

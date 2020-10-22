@@ -213,6 +213,11 @@ class EditionsController < InheritedResources::Base
     edition = Edition.find(params[:id])
     artefact = edition.artefact
 
+    unless current_user.govuk_editor?
+      flash[:alert] = "Incorrect permission"
+      redirect_to edition_path(edition) and return
+    end
+
     if validate_redirect(redirect_url) || redirect_url.blank?
       success = UnpublishService.call(artefact, current_user, redirect_url)
     else

@@ -64,4 +64,19 @@ class UnpublishTest < ActionDispatch::IntegrationTest
       end
     end
   end
+
+  context "Welsh editors" do
+    setup do
+      @welsh_editor = FactoryBot.create(:user, :welsh_editor, name: "Author", email: "test@example.com")
+      @welsh_artefact = FactoryBot.create(:artefact, language: "cy")
+      @welsh_edition = FactoryBot.create(:guide_edition, panopticon_id: @welsh_artefact.id, state: "ready")
+      login_as(@welsh_editor)
+    end
+
+    should "does not present unpublish tab for non-Welsh Editions" do
+      visit_edition @edition
+
+      assert_not page.has_css?(".nav.nav-tabs li", text: "Unpublish")
+    end
+  end
 end

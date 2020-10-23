@@ -11,6 +11,7 @@ class EditionWorkflowTest < JavascriptIntegrationTest
 
     @alice = FactoryBot.create(:user, :govuk_editor, name: "Alice")
     @bob = FactoryBot.create(:user, :govuk_editor, name: "Bob")
+    @welsh_editor = FactoryBot.create(:user, :welsh_editor)
 
     @guide = FactoryBot.create(:guide_edition)
     login_as "Alice"
@@ -456,6 +457,29 @@ class EditionWorkflowTest < JavascriptIntegrationTest
     click_on "Create new edition"
 
     assert page.has_content? "New edition created"
+  end
+
+  test "Welsh editors cannot create a new edition from the listings screen" do
+    guide.update!(state: "published")
+    login_as(@welsh_editor)
+
+    visit "/"
+    filter_for_all_users
+    view_filtered_list "Published"
+
+    assert_not page.has_css?(".btn.btn-default", text: "Create new edition")
+  end
+
+  test "Welsh editors can create a new Welsh edition from the listings screen" do
+    guide.update!(state: "published")
+    guide.artefact.update!(language: "cy")
+    login_as(@welsh_editor)
+
+    visit "/"
+    filter_for_all_users
+    view_filtered_list "Published"
+
+    assert page.has_css?(".btn.btn-default", text: "Create new edition")
   end
 
   test "can preview a draft article on draft-origin" do

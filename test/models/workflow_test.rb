@@ -310,6 +310,52 @@ class WorkflowTest < ActiveSupport::TestCase
     assert_not request_amendments(user, edition)
   end
 
+  test "Welsh editors should not be able to request a review" do
+    welsh_editor = FactoryBot.create(:user, :welsh_editor)
+
+    edition = FactoryBot.create(:edition, panopticon_id: FactoryBot.create(:artefact).id)
+
+    assert edition.can_request_review?
+    assert_not request_review(welsh_editor, edition)
+  end
+
+  test "Welsh editors should be able to request a review for a Welsh edition" do
+    welsh_user = FactoryBot.create(:user, :welsh_editor)
+
+    edition = FactoryBot.create(:edition, panopticon_id: FactoryBot.create(:artefact, language: "cy").id)
+
+    assert edition.can_request_review?
+    assert request_review(welsh_user, edition)
+  end
+
+  test "Welsh editors should not be able to review an edition" do
+    user = FactoryBot.create(:user, :govuk_editor)
+    welsh_editor = FactoryBot.create(:user, :welsh_editor)
+
+    edition = FactoryBot.create(:edition, panopticon_id: FactoryBot.create(:artefact).id)
+
+    assert edition.can_request_review?
+
+    request_review(user, edition)
+    assert_not approve_review(welsh_editor, edition)
+    assert_not request_amendments(welsh_editor, edition)
+  end
+
+  test "Welsh editors should be able to review a Welsh edition" do
+    user = FactoryBot.create(:user, :govuk_editor)
+    welsh_editor = FactoryBot.create(:user, :welsh_editor)
+
+    edition = FactoryBot.create(:edition, panopticon_id: FactoryBot.create(:artefact, language: "cy").id)
+
+    assert edition.can_request_review?
+
+    request_review(user, edition)
+    assert request_amendments(welsh_editor, edition)
+
+    request_review(user, edition)
+    assert approve_review(welsh_editor, edition)
+  end
+
   test "user should not be able to okay a guide they requested review for" do
     user = FactoryBot.create(:user, :govuk_editor, name: "Ben")
 

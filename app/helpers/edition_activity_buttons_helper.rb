@@ -30,12 +30,19 @@ module EditionActivityButtonsHelper
   end
 
   def progress_buttons(edition, options = {})
-    [
+    buttons = [
       ["Fact check", "send_fact_check"],
       ["2nd pair of eyes", "request_review"],
-      *scheduled_publishing_buttons(edition),
-      publish_button(edition),
-    ].map { |title, activity, button_color = "primary"|
+    ]
+
+    unless current_user.welsh_editor?
+      buttons.push(
+        *scheduled_publishing_buttons(edition),
+        publish_button(edition),
+      )
+    end
+
+    buttons.map { |title, activity, button_color = "primary"|
       disabled = !edition.send("can_#{activity}?")
       next if disabled && options.fetch(:skip_disabled_buttons, false)
 

@@ -482,6 +482,16 @@ class EditionWorkflowTest < JavascriptIntegrationTest
     assert page.has_css?(".btn.btn-default", text: "Create new edition")
   end
 
+  test "Welsh editors cannot see publishing buttons" do
+    edition = FactoryBot.create(:edition, state: "ready", panopticon_id: FactoryBot.create(:artefact, language: "cy").id)
+    login_as(@welsh_editor)
+
+    visit_edition edition
+
+    assert_not page.has_css?(".btn.btn-large.btn-warning", text: "Schedule")
+    assert_not page.has_css?(".btn.btn-large.btn-primary", text: "Publish")
+  end
+
   test "can preview a draft article on draft-origin" do
     guide.update!(state: "draft")
 

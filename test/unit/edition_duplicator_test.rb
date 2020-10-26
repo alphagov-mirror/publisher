@@ -8,7 +8,10 @@ class EditionDuplicatorTest < ActiveSupport::TestCase
   setup do
     @laura = FactoryBot.create(:user, :govuk_editor)
     @fred  = FactoryBot.create(:user, :govuk_editor)
+    @welsh_editor = FactoryBot.create(:user, :welsh_editor)
     @guide = FactoryBot.create(:guide_edition)
+    @welsh_artefact = FactoryBot.create(:artefact, language: "cy")
+    @welsh_guide = FactoryBot.create(:guide_edition, panopticon_id: @welsh_artefact.id)
     stub_register_published_content
   end
 
@@ -79,5 +82,19 @@ class EditionDuplicatorTest < ActiveSupport::TestCase
     assert command.duplicate("answer_edition", @fred)
 
     assert_equal "answer", artefact.reload.kind
+  end
+
+  test "Welsh editors may not create new versions" do
+    publish_item(@guide, @laura)
+    command = EditionDuplicator.new(@guide, @welsh_editor)
+
+    assert_not command.duplicate
+    assert_equal "Failed to create new edition: couldn't initialise", command.error_message
+  end
+
+  test "Welsh editors may create new versions of Welsh editions" do
+    publish_item(@welsh_guide, @laura)
+    command = EditionDuplicator.new(@welsh_guide, @welsh_editor)
+    assert command.duplicate
   end
 end

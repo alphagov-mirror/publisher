@@ -11,7 +11,7 @@ module Healthcheck
     end
 
     def details
-      url = "#{Plek.new.find("publishing-api")}/healthcheck"
+      url = "#{Plek.new.find('publishing-api')}/healthcheck"
       uri = URI.parse(url)
       http = Net::HTTP.new(uri.host, uri.port)
       request = Net::HTTP::Get.new(uri.request_uri)
